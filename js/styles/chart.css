@@ -195,7 +195,7 @@ table.data td {
 /* zoomScatter, inset */
 
 .zoom-scatter .dot {
-	opacity: 0.8;
+	opacity: 0.8; /* overridden by d3 in jnj.chart.js -- look for OVERRIDES CSS */
 	stroke-width: .4;
 	fill: white;
 }

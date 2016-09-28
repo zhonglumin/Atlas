@@ -1898,23 +1898,23 @@
 					.child('lines')
 						.run({data: cp.lines, cp: this.cp});
 			this.filteredSeries = series; // SUPERKLUDGE!!!
-			this.cp.chart && this.cp.chart.chart.gEl
-					.child('series')
-						.run({data: series, cp: this.cp});
 			/*
 			this.cp.chart && this.cp.chart.chart.gEl
 					.child('series')
+						.run({data: series, cp: this.cp});
+			this.cp.chart && this.cp.chart.chart.gEl
+					.child('series')
 						.run({data: series, delay: 1000, duration: 1000, cp: this.cp});
-			this.cp.chart && this.cp.chart.chart.gEl
-					.child('series')
-						.update({data: series, delay: 0, duration: 1000, cp: this.cp});
-			this.cp.chart && this.cp.chart.chart.gEl
-					.child('series')
-						.exit({data: series, delay: 1000, duration: 0, cp: this.cp});
-			this.cp.chart && this.cp.chart.chart.gEl
-					.child('series')
-						.enter({data: series, delay: 1000, duration: 0, cp: this.cp});
 			*/
+			this.cp.chart && this.cp.chart.chart.gEl
+					.child('series')
+						.exit({data: series, delay: 0, duration: 1000, cp: this.cp});
+			this.cp.chart && this.cp.chart.chart.gEl
+					.child('series')
+						.update({data: series, delay: 1000, duration: 1000, cp: this.cp});
+			this.cp.chart && this.cp.chart.chart.gEl
+					.child('series')
+						.enter({data: series, delay: 2000, duration: 1000, cp: this.cp});
 
 			//this.cp.inset.d3El.gEl.as('d3').remove();
 			this.cp.inset.chart.render(this.data, this.series, data, this.cp.inset, this.layout);
@@ -2089,14 +2089,9 @@
 																			// here, redundant to call it from d3el.run
 																			// but it's ok, that one will do nothing
 																			// because elements will be gone already
-																			thisD3El.child('dots')
-																				.exitCb(selection,cbParams, passParams, 
+																			selection.size() && thisD3El.child('dots')
+																				.exitCb(selection.selectAll('.dot'),cbParams, passParams, 
 																								thisD3El.child('dots'))
-																			selection
-																				//.transition()
-																				//.delay(delay)
-																				//.duration(duration)
-																				.remove()
 																		},
 																	});
 			seriesGs.addChild('dots',
@@ -2108,7 +2103,7 @@
 										},
 										classes: ['dot','main-chart'],
 										enterCb: function(selection, cbParams={}, passParams={}, thisD3El) {
-											//var {delay=0, duration=0, transition, cp=self.cp} = opts;
+											var {delay=0, duration=0, transition, cp=self.cp} = passParams;
 											//console.log('adding with', opts);
 
 
@@ -2145,12 +2140,22 @@
 													//return cp.color.scale(cp.series.value.call(this, d));
 													return cp.color.accessor(d);
 												})
+												.transition()
+												.attr("transform", function (d) {
+													var xVal = (cp.x.scale.range()[1] - cp.x.scale.range()[0]) / 2;
+													var yVal = (cp.y.scale.range()[0] - cp.y.scale.range()[1]) / 2;
+													return "translate(" + xVal + "," + yVal + ")";
+												})
+												.style("opacity", 0)
+												.transition()
+												.delay(delay).duration(duration)
 												.attr("transform", function (d) {
 													var xVal = cp.x.scale(cp.x.accessor(d));
 													var yVal = cp.y.scale(cp.y.accessor(d));
 													//return `translate(${xVal},${yVal}) scale(1,1)`;
 													return "translate(" + xVal + "," + yVal + ")";
 												})
+												.style("opacity", .8) // OVERRIDES CSS
 											if (cp.fill) {
 												selection.style('fill', function(d) {
 													return cp.fill.accessor(d);
@@ -2178,11 +2183,16 @@
 												});
 										},
 										exitCb: function(selection, cbParams={}, passParams={}, thisD3El) {
-											//var {delay=0, duration=0, transition} = transitionOpts;
+											var {delay=0, duration=0, transition} = passParams;
 											selection
-												//.transition()
-												//.delay(delay)
-												//.duration(duration)
+												.transition()
+												.delay(delay)
+												.duration(3000)
+												.attr("transform", function (d) {
+													var xVal = (cp.x.scale.range()[1] - cp.x.scale.range()[0]) / 2;
+													var yVal = (cp.y.scale.range()[0] - cp.y.scale.range()[1]) / 2;
+													return "translate(" + xVal + "," + yVal + ")";
+												})
 												.style("opacity", 0)
 												.remove()
 										},
@@ -2430,7 +2440,7 @@
 										},
 										updateCb: function(selection, cbParams={}, passParams={}, thisD3El) {
 											//var {delay=0, duration=0, transition, cp=self.cp} = opts;
-											console.log('updating inset dots', selection.size(), passParams.zoomData.length);
+											//console.log('updating inset dots', selection.size(), passParams.zoomData.length);
 											selection
 												.attr("transform", function (d) {
 													var xVal = cp.x.scale(cp.x.accessor(d));
