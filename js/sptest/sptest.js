@@ -75,6 +75,9 @@ define(['knockout', 'text!./sptest.html','lodash','ohdsi.util','databindings/d3C
 			self.chartObj().chartSetup(self.domElement(), 460, 150, opts, fields, self.recId);
 			self.chartObj().render(self.chartData(), self.domElement(), 460, 150, opts);
 			self.sharedCrossfilter().dimField('xy', opts.xy);
+			if (util.hasState('filters.brush')) {
+				$(self.jqEventSpace).trigger('brush', [util.getState('filters.brush')]);
+			}
 			/*  for coming back to tab
 			self.pillMode.subscribe(function(pillMode) {
 				if (pillMode === 'balance')
@@ -285,21 +288,10 @@ define(['knockout', 'text!./sptest.html','lodash','ohdsi.util','databindings/d3C
 						isField: true,
 			},
 			size: {
-						//value: d=>d.afterMatchingMeanTreated,
 						propName: 'afterMatchingMeanTreated',
 						//scale: d3.scale.log(),
 						label: "After matching mean treated",
 						tooltipOrder: 3,
-						/*
-						tooltipFunc: function(d, i, j, props, data, series, propName) {
-							var avg = d3.mean(
-													data.map(props.size.value));
-							return {
-								name: `After matching mean treated (avg: ${round(avg,4)})`,
-								value: round(props.size.value(d), 4),
-							};
-						},
-						*/
 						isField: true,
 						_accessors: {
 							avg: {
@@ -324,68 +316,102 @@ define(['knockout', 'text!./sptest.html','lodash','ohdsi.util','databindings/d3C
 							},
 						},
 			},
-			color: {
+			/* i've got four colors, three shapes, now trying to add 2 fill choices (filled or white)
+			 * but i have 22 covariate names, which determine series, and series is
+			 * used for color and shape, so a lot of covariate names share same color
+			 * and shape (i think) because of how they cycle through the choices
+			 * so combine color/shape/fill into one dimension with more unique choices
+			 * and derive color, shape, and fill from that
+			 *
+			 * also...like x/y, accessor for these dims returns the *domain* value,
+			 * not the range -- so x.accessor(d) returns d.beforeMatchingStdDiff and it's
+			 * left to the chart code to pass that value to x.scale and get back
+			 * a pixel value; and similarly, color/shape accessors return the 
+			 * d.covariateName instead of an actual color or shape, and the chart
+			 * uses that to look up color/shape from the corresponding scale.
+			 * but maybe color/shape/fill accessors should actually return color, shape,
+			 * and fill. (if i make this change to sptest, it will break balance chart
+			 * unless i fix it there)
+			 */
+			fillShapeColor: {
+						bindOrder: 4,
+						isField: true,
+						needsScale: true,
+						accessorDependsOnScale: true,
 						_accessors: {
 							value: {
-												func: function(d,i,j,allFields,data,series) {
-													return allFields.series.accessor(d,i,j,data,series);
+												func: function(d,i,j,allFields,data,series,thisField) {
+													return thisField.scale(
+																	allFields.series.accessor(d,i,j,data,series));
 												},
-												posParams: ['d','i','j','allFields','data','series'],
+												posParams: ['d','i','j','allFields','data','series','thisField'],
 							},
-							domain: {
+							domain: { // necessary so scale autogenerate doesn't try to use d3.extent
 												func: function(data, series, allFields) {
-													return _.uniq(data.map(allFields.series.accessor));
+													return (_.chain(data).groupBy(allFields.series.accessor)
+																		.toPairs().sortBy(d=>-d[1].length).map(0).value());
 												},
 												posParams: ['data', 'series', 'allFields'],
 							},
 							range: {
-								func: () => ['red', 'green', 'orange', 'blue'],
+								func: () => cartesianProduct(
+																['empty','filled'],
+																util.shapePath("types"),
+																['red', 'green', 'orange', 'blue']
+															),
 							},
 						},
-						//value: d=>nthroot(d.coefficient, 7),
-						//value: d=>d.coefficient,
-								/*
-								['NA','N/A','null','.']
-									.indexOf(d.coefficient &&
-													 d.coefficient.toLowerCase()
-													 .trim()) > -1
-									? 0 : d.coefficient || 0, // (set NA = 0)
-									*/
-						//label: "Coefficient",
-						label: "Nonsense series",
+						label: "Covariate name (color/shape/fill)",
 						scale: d3.scale.ordinal(),
-						//range: ['#ef8a62','#ddd','#67a9cf'],
-						//range: ['red', 'green', 'pink', 'blue'],
+			},
+			color: {
+						bindOrder: 10,
+						_accessors: {
+							value: {
+												func: function(d,i,j,allFields,data,series) {
+													return allFields.fillShapeColor.scale(
+																		allFields.series.accessor(d,i,j,data,series))[2];
+												},
+												posParams: ['d','i','j','allFields','data','series'],
+							},
+						},
+						label: "Covariate name (color)",
 						isField: true,
-						//domainFuncNeedsExtent: true,
-						//domainFunc: (data, ext) => [ext[0], 0, ext[1]],
-						/*
-						rangeFunc: (layout, prop) => {
-							prop.scale.rangePoints(
-								['#ef8a62','#ddd','#67a9cf']);
-						},
-						domainFunc: (data, prop) => {
-							var vals = data.map(prop.value).sort(d3.ascending);
-							return vals;
-							var preScale = d3.scale.ordinal()
-															.domain(vals)
-															.rangePoints([-1, 0, 1]);
-
-
-						},
-						*/
-						//range: ['red', 'yellow', 'blue'],
+						needsScale: false,
 			},
 			shape: {
+						bindOrder: 10,
 						label: "Covariate name (shape)",
 						tooltipOrder: 4,
 						isField: true,
+						needsScale: false,
 						_accessors: {
 							value: {
-												func: function(d,allFields) {
-													return allFields.series.accessor(d);
+												func: function(d,i,j,allFields,data,series) {
+													return allFields.fillShapeColor.scale(
+																		allFields.series.accessor(d,i,j,data,series))[1];
 												},
-												posParams: ['d','allFields'],
+												posParams: ['d','i','j','allFields','data','series'],
+							},
+						},
+			},
+			fill: {
+						bindOrder: 10,
+						label: "Covariate name (fill)",
+						isField: true,
+						_accessors: {
+							value: {
+												func: function(d,i,j,allFields,data,series) {
+													var filled = allFields.fillShapeColor.scale(
+																		allFields.series.accessor(d,i,j,data,series))[0];
+													if (filled === 'filled') {
+														return allFields.fillShapeColor.scale(
+																			allFields.series.accessor(d,i,j,data,series))[2];
+													} else {
+														return 'white';
+													}
+												},
+												posParams: ['d','i','j','allFields','data','series'],
 							},
 						},
 			},
@@ -416,4 +442,19 @@ define(['knockout', 'text!./sptest.html','lodash','ohdsi.util','databindings/d3C
 			},
 		};
 	}
+	function cartesianProduct(...arrays) {
+		//https://gist.github.com/hu9o/f4e80ed4b036fd76c31ef33dc5b32601
+		function _inner(...args) {
+			if (arguments.length > 1) {
+				let arr2 = args.pop(); // arr of arrs of elems
+				let arr1 = args.pop(); // arr of elems
+				return _inner(...args,
+					arr1.map(e1 => arr2.map(e2 => [e1, ...e2]))
+							.reduce((arr, e) => arr.concat(e), []));
+			} else {
+				return args[0];
+			}
+		};
+		return _inner(...arrays, [[]]);
+	};
 });

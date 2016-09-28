@@ -273,12 +273,12 @@ define(['jquery','knockout','lz-string', 'lodash', 'crossfilter/crossfilter'], f
 			this.cbParams = props.cbParams;
 			this._children = {};
 			//this.dataPropogationSelectors = props.dataPropogationSelectors; // not implemented yet
+			/*
 			if (typeof props.data === "function")
-				/*
 				console.warn(`d3 is supposed to handle selectAll().data(fn) nicely, 
 										 but it doesn't. so you can pass a func that accepts its
 										 d3El and returns a data array`);
-				*/
+			*/
 			this.dataKey = props.dataKey;
 			if (!props.stub) {
 				// props.data can be array or function that accepts this.parentD3El
@@ -349,7 +349,7 @@ define(['jquery','knockout','lz-string', 'lodash', 'crossfilter/crossfilter'], f
 				exitSelection
 						//.call(self.exitCb, self.cbParams, passParams, self, mainTrans)
 						.call(self.exitCb, self.cbParams, passParams, self)
-						.remove() // allow exitCb to remove? -> doesn't seem to work
+						//.remove() // allow exitCb to remove? -> doesn't seem to work
 			}
 			if (enter && selection.enter().size()) {
 				var enterSelection = selection.enter()
@@ -1217,28 +1217,11 @@ define(['jquery','knockout','lz-string', 'lodash', 'crossfilter/crossfilter'], f
 			}
 			return this.__accessors;
 		}
-		bindParams(params, throwGenerateError=true) {
-			// make allFields and thisField always available
-			params = _.extend({}, params, {allFields: this.allFields, thisField: this}); 
-			this.__accessors = {};
-			_.each(_.sortBy(this._accessors, 'accessorOrder'), acc => {
-				if (acc.name === 'scale') {
-					throw new Error("don't name an accessor 'scale'");
-				}
-				acc.accGen.bindParams(params);
-				try {
-					acc.accessor = acc.accGen.generate();
-					this.__accessors[acc.name] = acc.accessor;
-					if (!acc.runOnGenerate && acc.name !== 'value')
-						this[acc.name] = acc.accessor;
-					if (acc.name === 'value')
-						this.accessor = acc.accessor;
-				} catch(e) {
-					if (throwGenerateError) {
-						throw new Error("something went wrong binding/generating", this.name, acc, e);
-					}
-				}
-			});
+		/* usually scale domain generation depends on accessor: d3.extent(data.map(this.accessor));
+		 * but for color/shape/fill, letting accessor depend on scale, which means scale
+		 * has to be set first
+		 */
+		bindScale(params) {
 			try {
 				if (this.needsScale) {
 					this.scale.domain(this.accessors.domain());
@@ -1246,6 +1229,43 @@ define(['jquery','knockout','lz-string', 'lodash', 'crossfilter/crossfilter'], f
 				}
 			} catch(e) {
 				throw new Error("something went wrong setting scale", this.name, e);
+			}
+		}
+		bindAccessor(acc, params, throwGenerateError=true) {
+			acc.accGen.bindParams(params);
+			try {
+				acc.accessor = acc.accGen.generate();
+				this.__accessors[acc.name] = acc.accessor;
+				if (!acc.runOnGenerate && acc.name !== 'value')
+					this[acc.name] = acc.accessor;
+				if (acc.name === 'value')
+					this.accessor = acc.accessor;
+			} catch(e) {
+				if (throwGenerateError) {
+					throw new Error("something went wrong binding/generating", this.name, acc, e);
+				}
+			}
+		}
+		bindParams(params, throwGenerateError=true) {
+			// make allFields and thisField always available
+			params = _.extend({}, params, {allFields: this.allFields, thisField: this}); 
+			this.__accessors = {};
+			if (this.accessorDependsOnScale) {
+				this._accessors.range && this.bindAccessor(this._accessors.range, params, throwGenerateError);
+				this._accessors.domain && this.bindAccessor(this._accessors.domain, params, throwGenerateError);
+				this.bindScale(params);
+			}
+			_.each(_.sortBy(this._accessors, 'accessorOrder'), acc => {
+				if (this.accessorDependsOnScale && _.includes(['domain','range'], acc.name)) {
+					return;
+				}
+				if (acc.name === 'scale') {
+					throw new Error("don't name an accessor 'scale'");
+				}
+				this.bindAccessor(acc, params, throwGenerateError);
+			});
+			if (!this.accessorDependsOnScale) {
+				this.bindScale(params);
 			}
 		}
 	}
