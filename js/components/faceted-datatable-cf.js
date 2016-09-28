@@ -282,7 +282,7 @@ define(['knockout', 'text!./faceted-datatable-cf.html', 'lodash', 'ohdsi.util', 
 			var filterOn = updateOneFacetsFilters(facet);
 			updateFacetUI();
 		}
-		function updateOneFacetsFilters(facet, tellListenersToWait = false) {
+		function updateOneFacetsFilters(facet, initialSetup = false) {
 			// should only get here if:
 			//		1) loading page and initializing facet filters
 			//		2) toggled a facet filter
@@ -298,9 +298,10 @@ define(['knockout', 'text!./faceted-datatable-cf.html', 'lodash', 'ohdsi.util', 
 				// no members chosen for this facet. clear filter, which means all
 				//		records pass
 				var func = null;
+				if (initialSetup) return;
 			}
 			self.sharedCrossfilter().filter(facet.name, func, 
-							{source:'datatable.facet', waitForMore: tellListenersToWait});
+							{source:'datatable.facet', waitForMore: initialSetup});
 			// should maybe say *which* datatable, in case there's more than one
 			// on a page, but not dealing with that yet.
 			return !!func;
@@ -316,6 +317,7 @@ define(['knockout', 'text!./faceted-datatable-cf.html', 'lodash', 'ohdsi.util', 
 							Selected: selected,
 						};
 					});
+				facet.Members = _.sortBy(facet.Members, d => -d.ActiveCount);
 			});
 			self.facets.removeAll()
 			self.facets.push(...self._facets);

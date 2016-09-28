@@ -1799,15 +1799,10 @@
 						needsLabel: true,
 						needsValueFunc: true,
 						defaultValue: () => '#003142',
-						needsScale: true,
+						//needsScale: true,
 						isField: true,
 						scale: d3.scale.category10(),
-						_accessors: {
-							range: {
-								func: (thisField) => thisField.scale.range(),
-								posParams: ['thisField'],
-							},
-						}
+						accessorDependsOnScale: true,
 			},
 			shape: {
 						value: 0,
@@ -1817,10 +1812,24 @@
 						needsValueFunc: true,
 						needsScale: true,
 						isField: true,
+						accessorDependsOnScale: true,
 						_accessors: {
 							range: {
 								func: () => util.shapePath("types"),
+								accessorOrder: 1,
 							},
+							domain: {
+								accessorOrder: 2,
+								func: () => {
+									throw new Error("need to override shape domain accessor");
+								}
+							},
+							value: {
+								accessorOrder: 3,
+								func: () => {
+									throw new Error("need to override shape domain accessor");
+								}
+							}
 						}
 			},
 			legend: {
@@ -2074,6 +2083,21 @@
 																		//data: [],
 																		data: series,
 																		dataKey: d=>d.name,
+																		exitCb: function(selection, cbParams={}, passParams={}, thisD3El) {
+																			//var {delay=0, duration=0, transition} = transitionOpts;
+																			// since calling child exitCb from
+																			// here, redundant to call it from d3el.run
+																			// but it's ok, that one will do nothing
+																			// because elements will be gone already
+																			thisD3El.child('dots')
+																				.exitCb(selection,cbParams, passParams, 
+																								thisD3El.child('dots'))
+																			selection
+																				//.transition()
+																				//.delay(delay)
+																				//.duration(duration)
+																				.remove()
+																		},
 																	});
 			seriesGs.addChild('dots',
 									{tag: 'path',
@@ -2110,7 +2134,7 @@
 													var xVal = 0; //cp.x.scale(cp.x.accessor(d));
 													var yVal = 0; //cp.y.scale(cp.y.accessor(d));
 													return util.shapePath(
-																		cp.shape.scale(cp.shape.accessor(d)),
+																		cp.shape.accessor(d),
 																		xVal, // 0, //options.xValue(d),
 																		yVal, // 0, //options.yValue(d),
 																		cp.size.scale(cp.size.accessor(d)));
@@ -2119,7 +2143,7 @@
 													// calling with this so default can reach up to parent
 													// for series name
 													//return cp.color.scale(cp.series.value.call(this, d));
-													return cp.color.scale(cp.color.accessor(d));
+													return cp.color.accessor(d);
 												})
 												.attr("transform", function (d) {
 													var xVal = cp.x.scale(cp.x.accessor(d));
@@ -2127,6 +2151,11 @@
 													//return `translate(${xVal},${yVal}) scale(1,1)`;
 													return "translate(" + xVal + "," + yVal + ")";
 												})
+											if (cp.fill) {
+												selection.style('fill', function(d) {
+													return cp.fill.accessor(d);
+												});
+											}
 										},
 										updateCb: function(selection, cbParams={}, passParams={}, thisD3El) {
 											//var {delay=0, duration=0, transition, cp=self.cp} = opts;
@@ -2267,8 +2296,8 @@
 			size: {
 						proxyFor: parentOpts.size,
 						bindSeparately: false,
-						needsScale: true,
 						isField: true,
+						needsScale: true,
 						_accessors: {
 							range: {
 								func: () => [.5, 8],
@@ -2280,12 +2309,12 @@
 						proxyFor: parentOpts.color,
 						bindSeparately: false,
 						isField: true,
-						scale: parentOpts.color.scale,
+						//scale: parentOpts.color.scale,
 			},
 			shape: {
 						proxyFor: parentOpts.shape,
 						bindSeparately: false,
-						scale: parentOpts.shape.scale,
+						//scale: parentOpts.shape.scale,
 						isField: true,
 			},
 			legend: {
@@ -2379,7 +2408,7 @@
 													var xVal = 0; //cp.x.scale(cp.x.accessor(d));
 													var yVal = 0; //cp.y.scale(cp.y.accessor(d));
 													return util.shapePath(
-																		cp.shape.scale(cp.shape.accessor(d)),
+																		cp.shape.accessor(d),
 																		xVal, // 0, //options.xValue(d),
 																		yVal, // 0, //options.yValue(d),
 																		cp.size.scale(cp.size.accessor(d)));
@@ -2390,6 +2419,14 @@
 													//return `translate(${xVal},${yVal}) scale(1,1)`;
 													return "translate(" + xVal + "," + yVal + ")";
 												})
+												.style("stroke", function (d) {
+													return cp.color.accessor(d);
+												})
+											if (cp.fill) {
+												selection.style('fill', function(d) {
+													return cp.fill.accessor(d);
+												});
+											}
 										},
 										updateCb: function(selection, cbParams={}, passParams={}, thisD3El) {
 											//var {delay=0, duration=0, transition, cp=self.cp} = opts;
@@ -2399,9 +2436,6 @@
 													var xVal = cp.x.scale(cp.x.accessor(d));
 													var yVal = cp.y.scale(cp.y.accessor(d));
 													return "translate(" + xVal + "," + yVal + ")";
-												})
-												.style("stroke", function (d) {
-													return cp.color.scale(cp.color.accessor(d));
 												})
 												.classed('out-of-zoom', function(d) {
 													return !_.some(passParams.zoomData, 
