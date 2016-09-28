@@ -357,8 +357,7 @@ define(['knockout', 'text!./sptest.html','lodash','ohdsi.util','databindings/d3C
 								func: () => cartesianProduct(
 																['empty','filled'],
 																util.shapePath("types"),
-																['red', 'green', 'orange', 'blue']
-															),
+																['red', 'green', 'orange', 'blue']),
 							},
 						},
 						label: "Covariate name (color/shape/fill)",

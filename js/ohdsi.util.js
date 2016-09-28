@@ -335,12 +335,13 @@ define(['jquery','knockout','lz-string', 'lodash', 'crossfilter/crossfilter'], f
 			var passParamsForChildren = _.omit(passParams, ['data']); // data gets passed automatically
 			//var {delay=0, duration=0} = passParams;
 
-			//var mainTrans = passParams.transition || d3.transition();
-			//passParams.transition = mainTrans;
+			var mainTrans = passParams.transition || d3.transition();
+			passParams.transition = mainTrans;
 			// should allow callbacks to pass transitions back so they
 			// can be passed on to next callback?
 
-			if (exit && selection.exit().size()) {
+			console.log(self.classes, selection.size(), selection.exit().size(), selection.enter().size());
+			if (exit) {
 				//if (selection.exit().size()) console.log(`exiting ${self.name}`);
 				var exitSelection = selection.exit();
 				_.each(self.children(), (c, name) => {
@@ -351,7 +352,7 @@ define(['jquery','knockout','lz-string', 'lodash', 'crossfilter/crossfilter'], f
 						.call(self.exitCb, self.cbParams, passParams, self)
 						//.remove() // allow exitCb to remove? -> doesn't seem to work
 			}
-			if (enter && selection.enter().size()) {
+			if (enter) {
 				var enterSelection = selection.enter()
 						.append(self.tag)
 							.each(function(d) { // add classes
@@ -367,7 +368,7 @@ define(['jquery','knockout','lz-string', 'lodash', 'crossfilter/crossfilter'], f
 				});
 			}
 			selection = self.selectAllJoin(data);
-			if (update && selection.size()) {
+			if (update) {
 				selection
 						//.call(self.updateCb, self.cbParams, passParams, self, mainTrans)
 						.call(self.updateCb, self.cbParams, passParams, self)
