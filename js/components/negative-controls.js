@@ -251,7 +251,7 @@ define(['knockout',
                 isField: true,
             },
             fControls: {
-                propName: 'medlineCt',
+                name: 'subsetToCandidate',
                 value: d => { 
                     if (d.medlineCt == 0 &&  
                         d.medlineCase == 0 &&  
@@ -377,7 +377,7 @@ define(['knockout',
             }            
         }
 
-        self.useCF = ko.observable(false);
+        self.useCF = ko.observable(true);
         
         self.negControlColumns = [
             {

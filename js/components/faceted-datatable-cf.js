@@ -143,9 +143,9 @@ define(['knockout', 'text!./faceted-datatable-cf.html', 'lodash', 'ohdsi.util', 
 
 		function newRecs(recs) {
 			var scf = self.sharedCrossfilter();
-			if (recs !== ko.utils.unwrapObservable(params.recs)) {
+			//if (recs !== ko.utils.unwrapObservable(params.recs)) {
 				scf.replaceData(recs);
-			}
+			//}
 			processFieldFacetColumnParams();
 				// really facets and datatables should be separate components
 			columnSetup();
