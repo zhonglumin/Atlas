@@ -33,7 +33,7 @@ define(['jquery','knockout','lz-string', 'lodash', 'crossfilter/crossfilter'], f
 
 	var DEBUG = true;
 	var ALLOW_CACHING = [
-		//'.*',
+		//'.*',						// REMEMBER TO COMMENT THIS LINE OUT WHEN NOT DEVELOPING!!
 		//'/WebAPI/[^/]+/person/',
 	];
 	
@@ -1518,9 +1518,9 @@ define(['jquery','knockout','lz-string', 'lodash', 'crossfilter/crossfilter'], f
 	function cachedAjax(opts) {
 		var allowed = _.find(ALLOW_CACHING, url => opts.url.match(url));
 		if (allowed) {
-			console.log(`using cache for ${opts.url}. remove ${allowed} from ohdsi.util.ALLOW_CACHING to disable caching for it`);
+			console.trace(`using cache for ${opts.url}. remove ${allowed} from ohdsi.util.ALLOW_CACHING to disable caching for it`);
 		} else {
-			console.log(`not caching ${opts.url}. add to ohdsi.util.ALLOW_CACHING to enable caching for it`);
+			//console.log(`not caching ${opts.url}. add to ohdsi.util.ALLOW_CACHING to enable caching for it`);
 			return $.ajax(opts);
 		}
 		var key = JSON.stringify(opts);
@@ -1691,6 +1691,7 @@ define(['jquery','knockout','lz-string', 'lodash', 'crossfilter/crossfilter'], f
 	utilModule.ChartInset = ChartInset;
 	//utilModule.ChartProps = ChartProps;
 	utilModule.AccessorGenerator = AccessorGenerator;
+	utilModule.dataAccessor = dataAccessor;
 	utilModule.getState = getState;
 	utilModule.setState = setState;
 	utilModule.deleteState = deleteState;

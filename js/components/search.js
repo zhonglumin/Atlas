@@ -1,4 +1,4 @@
-define(['knockout', 'text!./search.html', 'knockout.dataTables.binding', 'faceted-datatable'], function (ko, view) {
+define(['knockout', 'text!./search.html', 'knockout.dataTables.binding', 'components/faceted-datatable-cf'], function (ko, view) {
 	function search(params) {
 		var self = this;
 		if (params.controller) {

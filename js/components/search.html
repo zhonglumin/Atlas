@@ -155,7 +155,7 @@
 		<div role="tabpanel" data-bind="css: { active: $component.tabMode() == 'results' }" class="tab-pane">
 			<div class="heading" data-bind="text: 'Search Results for ' + decodeURI(model.currentSearch())">
 			</div>
-			<faceted-datatable params="{orderColumn: 7, columns: model.searchConceptsColumns, options: model.searchConceptsOptions, reference: model.searchResultsConcepts, rowCallback: model.contextSensitiveLinkColor }"></faceted-datatable>
+			<faceted-datatable-cf params="{orderColumn: 7, columns: model.searchConceptsColumns, options: model.searchConceptsOptions, reference: model.searchResultsConcepts, rowCallback: model.contextSensitiveLinkColor }"></faceted-datatable-cf>
 		</div>
 	</div>
 
