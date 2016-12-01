@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -82,8 +82,9 @@
 			</div>
 			<!-- /ko -->
 			<!-- /ko -->
-
 			<!-- /ko -->
+
+			<user-bar></user-bar>
 
 			<div id="wrapperLoading" data-bind="if: currentView() == 'loading'">
 				<div class="wrapperTitle">
@@ -97,10 +98,6 @@
 
 			<div data-bind="if:pageModel.currentView()=='home'">
 				<home params="{model: pageModel}"></home>
-			</div>
-
-			<div data-bind="if:pageModel.currentView()=='welcome'">
-				<welcome params="{model: pageModel}"></welcome>
 			</div>
 
 			<div data-bind="if:pageModel.currentView()=='conceptsets'">
@@ -174,7 +171,7 @@
 					<div data-bind="if:!appInitializationFailed()">
 						<div class="heading">Configured Services</div>
 						<ohdsi-configuration params="{enableRecordCounts: pageModel.enableRecordCounts, services: pageModel.services}"></ohdsi-configuration>
-						<r-manager></r-manager>				
+						<r-manager></r-manager>
 					</div>
 				</div>
 			</div>

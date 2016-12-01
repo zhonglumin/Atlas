@@ -31,17 +31,20 @@ define(['knockout', 'text!./welcome.html', 'appConfig'], function (ko, view, app
             {
                 name: 'Windows',
                 url: 'user/login',
-                ajax: true
+                ajax: true,
+								icon: 'fa fa-windows'
             },
             {
                 name: 'Google',
                 url: 'user/oauth/google',
-                ajax: false
+                ajax: false,
+								icon: 'fa fa-google'
             },
             {
                 name: 'Facebook',
                 url: 'user/oauth/facebook',
-                ajax: false
+                ajax: false,
+								icon: 'fa fa-facebook'
             },
         ];
         self.currentAuthProvider = ko.observable(self.authProviders[0]);

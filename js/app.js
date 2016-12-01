@@ -120,11 +120,6 @@ define(['jquery', 'knockout', 'jnj_chart', 'd3', 'ohdsi.util', 'appConfig', 'web
 							self.currentView('home');
 						});
 					},
-					'/welcome': function () {
-						require(['welcome'], function () {
-							self.currentView('welcome');
-						});
-					},
 					'/welcome/:token': function (token) {
 						require(['welcome'], function () {
 							authApi.token(token);
