@@ -1,4 +1,4 @@
-define(['jquery', 'knockout', 'jnj_chart', 'd3', 'ohdsi.util', 'appConfig', 'facets', 'knockout-persist', 'css!styles/tabs.css', 'css!styles/buttons.css'], function ($, ko, jnj_chart, d3, ohdsiUtil, config) {
+define(['jquery', 'knockout', 'jnj_chart', 'd3', 'ohdsi.util', 'appConfig', 'facets', 'css!styles/tabs.css', 'css!styles/buttons.css'], function ($, ko, jnj_chart, d3, ohdsiUtil, config) {
 	var appModel = function () {
 		$.support.cors = true;
 		var self = this;
@@ -1596,14 +1596,12 @@ define(['jquery', 'knockout', 'jnj_chart', 'd3', 'ohdsi.util', 'appConfig', 'fac
 			return '<i class="fa ' + icon + ' ' + css + '"></i>';
 		}
 		self.currentConceptSetMode = ko.observable('details');
-		//ohdsiUtil.setState('cohortDefTab', 'definition');
 		self.currentCohortDefinitionMode = ko.observable('definition');
 		self.currentImportMode = ko.observable('identifiers');
 		self.feRelated = ko.observable();
 		self.feSearch = ko.observable();
 		self.metarchy = {};
 		self.selectedConcepts = ko.observableArray(null);
-		//.extend({ persist: 'atlas.selectedConcepts' });
 		self.selectedConceptsWarnings = ko.observableArray();
 
 		self.checkCurrentSource = function (source) {

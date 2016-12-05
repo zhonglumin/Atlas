@@ -26,10 +26,10 @@ requirejs.config({
 			name: "iranalysis",
 			location: "modules/iranalysis"
         },
-        {
-		    name: "extenders",
-		    location: "extenders"
-        }        
+		{
+			name: "extenders",
+			location: "extenders"
+        }
 	],
 	shim: {
 		"colorbrewer": {
@@ -40,11 +40,11 @@ requirejs.config({
 				'jquery'
 			]
 		},
-        "prism" :{
-            "prism": {
-                "exports": "Prism"
-            }
-        }
+		"prism": {
+			"prism": {
+				"exports": "Prism"
+			}
+		}
 	},
 	map: {
 		"*": {
@@ -67,11 +67,10 @@ requirejs.config({
 		"knockout": "knockout.min",
 		"ko.sortable": "https://cdnjs.cloudflare.com/ajax/libs/knockout-sortable/0.11.0/knockout-sortable",
 		"knockout-mapping": "knockout.mapping",
-		"knockout-persist": "knockout.persist",
-    "knockout-amd-helpers": "knockout-amd-helpers.min",
+		"knockout-amd-helpers": "knockout-amd-helpers.min",
 		"datatables.net": "jquery.dataTables.min",
-		"datatables.net-buttons" : "jquery.dataTables.buttons.min",
-		"datatables.net-buttons-html5" : "jquery.dataTables.buttons.html5.min",
+		"datatables.net-buttons": "jquery.dataTables.buttons.min",
+		"datatables.net-buttons-html5": "jquery.dataTables.buttons.html5.min",
 		"colvis": "jquery.dataTables.colVis.min",
 		"director": "director.min",
 		"search": "components/search",
@@ -95,17 +94,17 @@ requirejs.config({
 		"feasibility-analyzer": "components/feasibility-analyzer",
 		"report-manager": "components/report-manager",
 		"ir-manager": "components/ir-manager",
-        "ir-browser": "components/ir-browser",
+		"ir-browser": "components/ir-browser",
 		"faceted-datatable": "components/faceted-datatable",
 		"profile-manager": "components/profile-manager",
 		"explore-cohort": "components/explore-cohort",
 		"cohortcomparison": "modules/cohortcomparison",
 		"r-manager": "components/r-manager",
-        "negative-controls": "components/negative-controls",
+		"negative-controls": "components/negative-controls",
 		"d3": "d3.min",
 		"d3_tip": "d3.tip",
 		"jnj_chart": "jnj.chart",
-		"nvd3":"nv.d3",
+		"nvd3": "nv.d3",
 		//"lodash": "lodash.min",
 		"lodash": "lodash.4.15.0.full",
 		"lscache": "lscache.min",
@@ -116,8 +115,8 @@ requirejs.config({
 		"webapi": "modules/WebAPIProvider",
 		"vocabularyprovider": "modules/WebAPIProvider/VocabularyProvider",
 		"appConfig": "config",
-		"home" : "components/home",
-		"common":"components/datasources/app/common",
+		"home": "components/home",
+		"common": "components/datasources/app/common",
 		"reports": "components/datasources/app/reports",
 		"prism": "prism",
 		"sptest": "sptest/sptest",
@@ -126,11 +125,11 @@ requirejs.config({
 });
 
 requirejs(['bootstrap'], function () { // bootstrap must come first
-	requirejs(['knockout', 'app', 'appConfig', 'ohdsi.util', 'director', 'search', 'localStorageExtender', 'jquery.ui.autocomplete.scroll'], function (ko, app, config, util) {
+	requirejs(['knockout', 'app', 'appConfig', 'ohdsi.util', 'lscache', 'director', 'search', 'localStorageExtender', 'jquery.ui.autocomplete.scroll'], function (ko, app, config, util, lscache) {
 		$('#splash').fadeIn();
 		var pageModel = new app();
 		window.pageModel = pageModel;
-		ko.applyBindings(pageModel,document.getElementsByTagName('html')[0]);
+		ko.applyBindings(pageModel, document.getElementsByTagName('html')[0]);
 
 		// establish base priorities for daimons
 		var evidencePriority = 0;
@@ -139,11 +138,18 @@ requirejs(['bootstrap'], function () { // bootstrap must come first
 
 		// initialize all service information asynchronously
 		$.each(config.services, function (serviceIndex, service) {
+			var serviceCacheKey = 'ATLAS|' + service.url;
+			cachedService = lscache.get(serviceCacheKey);
+			if (cachedService) {
+				config.services[serviceIndex] = cachedService;
+				return;
+			}
+
 			service.sources = [];
 			var servicePromise = $.Deferred();
 			pageModel.initPromises.push(servicePromise);
 
-			util.cachedAjax({
+			$.ajax({
 				url: service.url + 'source/sources',
 				method: 'GET',
 				contentType: 'application/json',
@@ -204,7 +210,7 @@ requirejs(['bootstrap'], function () { // bootstrap must come first
 						service.sources.push(source);
 
 						if (source.hasVocabulary) {
-							util.cachedAjax({
+							$.ajax({
 								url: service.url + source.sourceKey + '/vocabulary/info',
 								timeout: 20000,
 								method: 'GET',
@@ -215,6 +221,7 @@ requirejs(['bootstrap'], function () { // bootstrap must come first
 									source.dialect = info.dialect;
 
 									if (completedSources == sources.length) {
+										lscache.set(serviceCacheKey, service, 720);
 										servicePromise.resolve();
 									}
 								},
@@ -419,10 +426,10 @@ requirejs(['bootstrap'], function () { // bootstrap must come first
 			pageModel.resolveConceptSetExpression();
 			pageModel.analyzeSelectedConcepts();
 		});
-		
+
 		$(window).bind('beforeunload', function () {
 			if (pageModel.hasUnsavedChanges())
 				return "Changes will be lost if you do not save.";
-		});		
+		});
 	});
 });
