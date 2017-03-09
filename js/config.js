@@ -13,5 +13,6 @@ define([], function () {
 	config.cohortComparisonResultsEnabled = false;
 	config.userAuthenticationEnabled = false;
 
+
 	return config;
 });
