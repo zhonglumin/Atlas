@@ -263,6 +263,22 @@ define(['jquery', 'knockout', 'jnj_chart', 'd3', 'ohdsi.util', 'appConfig', 'web
 							self.currentView('cohort-comparison-manager');
 						});
 					},
+					'/treegrid': function () {
+						require(['treegrid-manager'], function () {
+							self.componentParams = {
+								model: self
+							};
+							self.currentView('treegrid-manager');
+						});
+					},		
+					'/slickgrid': function () {
+						require(['slickgrid-manager'], function () {
+							self.componentParams = {
+								model: self
+							};
+							self.currentView('slickgrid-manager');
+						});
+					},						
 					'/iranalysis': function () {
 						require(['ir-browser'], function () {
 							self.componentParams = {

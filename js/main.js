@@ -30,6 +30,9 @@ requirejs.config({
         }
 	],
 	shim: {
+		jquery: {
+			exports: '$'
+		},
 		"colorbrewer": {
 			exports: 'colorbrewer'
 		},
@@ -69,6 +72,12 @@ requirejs.config({
 		"datatables.net": "jquery.dataTables.min",
 		"datatables.net-buttons": "jquery.dataTables.buttons.min",
 		"datatables.net-buttons-html5": "jquery.dataTables.buttons.html5.min",
+		"datatables.treegrid": "dataTables.treeGrid",
+		"treegrid-manager": "components/treegrid-manager",
+		"slickgrid-manager": "components/slickgrid-manager",
+		"slickcore": 'slick.core',
+		"slickgrid": 'slick.grid',
+		"slickdataview": 'slick.dataview',
 		"colvis": "jquery.dataTables.colVis.min",
 		"director": "director.min",
 		"search": "components/search",
@@ -95,6 +104,8 @@ requirejs.config({
 		"report-manager": "components/report-manager",
 		"ir-manager": "components/ir-manager",
 		"ir-browser": "components/ir-browser",
+		dragevent: 'jquery.event.drag-2.3.0',
+		dropevent: 'jquery.event.drop-2.3.0',
 		"faceted-datatable": "components/faceted-datatable",
 		"profile-manager": "components/profile-manager",
 		"explore-cohort": "components/explore-cohort",
