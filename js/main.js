@@ -106,6 +106,7 @@ requirejs.config({
 		"negative-controls": "components/negative-controls",
 		"d3": "d3.min",
 		"d3_tip": "d3.tip",
+		"d3-slider": "d3.slider",
 		"jnj_chart": "jnj.chart",
 		"nvd3": "nv.d3",
 		//"lodash": "lodash.min",
@@ -131,7 +132,12 @@ requirejs.config({
 		"roles": "components/roles",
 		"role-details": "components/role-details",
 		"loading": "components/loading",
-		"atlas-state": "components/atlas-state"
+		"atlas-state": "components/atlas-state",
+		"plp-manager": "components/plp-manager",
+		"plp-inspector": "components/plp-inspector",
+		"plp-browser": "components/plp-browser",
+		"plp-roc": "components/plp-roc",
+		"plp-calibration": "components/plp-calibration"
 	}
 });
 
