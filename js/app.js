@@ -107,6 +107,23 @@ define(['jquery', 'knockout', 'ohdsi.util', 'appConfig', 'webapi/AuthAPI', 'atla
 							self.loadCohortDefinition(cohortDefinitionId, conceptSetId, 'cohort-definition-manager', 'details');
 						});
 					},
+					'/plp': function () {
+						require(['plp-browser', 'plp-manager', 'plp-inspector'], function () {
+							self.componentParams = {
+								model: self
+							};
+							self.currentView('plp-browser');
+						});
+					},
+					'/plp/:modelId:': function (modelId) {
+						self.currentModelId(modelId);
+						require(['plp-manager', 'plp-inspector', 'plp-roc', 'plp-calibration'], function () {
+							self.componentParams = {
+								model: self
+							};
+							self.currentView('plp-manager');
+						});
+					},
 					'/datasources': function () {
 						require(['data-sources'], function () {
 							self.componentParams = {
@@ -1384,6 +1401,7 @@ define(['jquery', 'knockout', 'ohdsi.util', 'appConfig', 'webapi/AuthAPI', 'atla
 		self.conceptSetInclusionIdentifiers = ko.observableArray();
 		self.currentConceptSetExpressionJson = ko.observable();
 		self.currentConceptIdentifierList = ko.observable();
+		self.currentModelId = ko.observable();
 
 		self.currentConceptSet = ko.observable();
 		self.currentConceptSetDirtyFlag = new ohdsiUtil.dirtyFlag({

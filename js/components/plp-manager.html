@@ -1,0 +1,37 @@
+<div class="wrapperTitle">
+    <i class="fa fa-heartbeat"></i>Patient Level Prediction
+</div>
+
+<ul class="nav nav-tabs">
+    <li role="presentation" data-bind="css: { active: $component.tabMode() == 'inspector' }, click: function() { $component.tabMode('inspector'); }">
+        <a>Inspector</a>
+    </li>
+    <li role="presentation" data-bind="css: { active: $component.tabMode() == 'performance' }, click: function() { $component.tabMode('performance'); }">
+        <a>Performance</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div role="tabpanel" data-bind="css: { active: $component.tabMode() == 'inspector' }" class="tab-pane">
+        <plp-inspector params="modelId:modelId"></plp-inspector>
+    </div>
+
+    <div role="tabpanel" data-bind="css: { active: $component.tabMode() == 'performance' }" class="tab-pane">
+
+        <ul class="nav nav-pills">
+            <li role="presentation" data-bind="css: {active: $component.performanceTabMode() == 'discrimination'}, click: function() {$component.performanceTabMode('discrimination')};">
+                <a> Discrimination</a>
+            </li>
+            <li role="presentation" data-bind="css: {active: $component.performanceTabMode() == 'calibration'}, click: function() {$component.performanceTabMode('calibration')};">
+                <a>Calibration</a>
+            </li>
+        </ul>
+
+        <div data-bind="if: $component.performanceTabMode() == 'discrimination'">
+            <plp-roc params="modelId:modelId"></plp-roc>
+        </div>
+        <div data-bind="if: $component.performanceTabMode() == 'calibration'">
+            <plp-calibration params="modelId:modelId"></plp-calibration>
+        </div>
+    </div>
+</div>
