@@ -27,7 +27,11 @@ requirejs.config({
 		{
 			name: "extenders",
 			location: "extenders"
-        }
+        },
+		{
+			name: "plp",
+			location: "modules/plp"
+		},
 	],
 	shim: {
 		"colorbrewer": {
@@ -105,6 +109,8 @@ requirejs.config({
 		"r-manager": "components/r-manager",
 		"negative-controls": "components/negative-controls",
 		"nvd3": "nv.d3",
+		"atlascharts": "https://unpkg.com/@ohdsi/atlascharts@1.1.0/dist/atlascharts.min",
+		"jnj_chart": "jnj.chart", // scatterplot is not ported to separate library		
 		"lodash": "lodash.4.15.0.full",
 		"lscache": "lscache.min",
 		"localStorageExtender": "localStorageExtender",
@@ -133,6 +139,9 @@ requirejs.config({
 		"plp-browser": "components/plp-browser",
 		"plp-roc": "components/plp-roc",
 		"plp-calibration": "components/plp-calibration",
+		"plp-spec-editor": "components/plp-spec-editor",
+		"plp-r-code": "components/plp-r-code",
+		"plp-print-friendly": "components/plp-print-friendly",
 
 		"d3": "https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min",
 		"d3-collection": "https://cdnjs.cloudflare.com/ajax/libs/d3-collection/1.0.4/d3-collection.min",

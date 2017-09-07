@@ -1,0 +1,128 @@
+<div data-bind="if: $component.cohortComparison() && ($component.cohortComparison().readyForDisplay() == false)">
+	Please complete the full specification for the study
+</div>
+<div data-bind="if: $component.cohortComparison() && $component.cohortComparison().readyForDisplay()">
+	<h3>Prediction Aim</h3>
+	<br/> In <span class="cohort-comparison-pf-reference" data-bind="text: $component.cohortComparison().treatmentCaption()"></span> predict who will develop <span class="cohort-comparison-pf-reference" data-bind="text: $component.cohortComparison().outcomeCaption()"></span> during the period from <span data-bind="text: $component.cohortComparison().timeAtRiskStart()"></span> days from cohort start date to <span data-bind="text: $component.cohortComparison().timeAtRiskEnd()"></span> days.
+	<br/>
+	<h3>Prediction Options</h3>
+	<br/> TODO
+	<br/>
+	<h3>Prediction Options</h3>
+	<br/> TODO
+	<br/>
+	<h3>Databases</h3>
+	<br/> TODO
+	<br/>
+	<h3>Covariates</h3>
+	<br/>
+	<br /> The types of covariates used in the prediction model will be:
+	<br />
+	<br />
+	<div>
+		<ul data-bind="visible: cohortComparison().psDemographics">
+			<li>Demographics</li>
+			<ul>
+				<li data-bind="visible:cohortComparison().psDemographicsGender">Gender</li>
+				<li data-bind="visible:cohortComparison().psDemographicsAge">Age group (5-year bands)</li>
+				<li data-bind="visible:cohortComparison().psDemographicsYear">Index year</li>
+				<li data-bind="visible:cohortComparison().psDemographicsMonth">Index month</li>
+				<li data-bind="visible:cohortComparison().psDemographicsRace">Race</li>
+				<li data-bind="visible:cohortComparison().psDemographicsEthnicity">Ethnicity</li>
+			</ul>
+		</ul>
+		<ul data-bind="visible: cohortComparison().psCondition">
+			<li>Conditions</li>
+			<ul>
+				<li data-bind="visible:cohortComparison().psConditionOcc30d">In prior 30d</li>
+				<li data-bind="visible:cohortComparison().psConditionOcc365d">In prior 365d</li>
+				<li data-bind="visible:cohortComparison().psConditionOccInpt180d">In prior 180d within inpatient setting</li>
+				<li data-bind="visible:cohortComparison().psConditionEraEver">All time prior</li>
+				<li data-bind="visible:cohortComparison().psConditionEraOverlap">Overlapping index date</li>
+			</ul>
+		</ul>
+		<ul data-bind="visible: cohortComparison().psConditionGroup">
+			<li>Condition aggregation</li>
+			<ul>
+				<li data-bind="visible:cohortComparison().psConditionGroupSnomed">SNOMED</li>
+				<li data-bind="visible:cohortComparison().psConditionGroupMeddra">MedDRA</li>
+			</ul>
+		</ul>
+		<ul data-bind="visible: cohortComparison().psDrug">
+			<li>Drugs</li>
+			<ul>
+				<li data-bind="visible:cohortComparison().psDrugInPrior30d">In prior 30d</li>
+				<li data-bind="visible:cohortComparison().psDrugInPrior365d">In prior 365d</li>
+				<li data-bind="visible:cohortComparison().psDrugEraEver">All time prior</li>
+				<li data-bind="visible:cohortComparison().psDrugEraOverlap">Overlapping index date</li>
+			</ul>
+		</ul>
+		<ul data-bind="visible: cohortComparison().psDrugAggregation">
+			<li>Drug aggregation</li>
+			<ul>
+				<li data-bind="visible:cohortComparison().psDrugExposure">Clinical Drug</li>
+				<li data-bind="visible:cohortComparison().psDrugEra">Ingredient</li>
+				<li data-bind="visible:cohortComparison().psDrugGroup">ATC Class</li>
+			</ul>
+		</ul>
+		<ul data-bind="visible: cohortComparison().psProcedureOcc">
+			<li>Procedures</li>
+			<ul>
+				<li data-bind="visible:cohortComparison().psProcedureOcc30d">In prior 30d</li>
+				<li data-bind="visible:cohortComparison().psProcedureOcc365d">In prior 365d</li>
+			</ul>
+		</ul>
+		<ul data-bind="visible: cohortComparison().psMeasurement">
+			<li>Measurement</li>
+			<ul>
+				<li data-bind="visible:cohortComparison().psMeasurement30d">Existence in prior 30d</li>
+				<li data-bind="visible:cohortComparison().psMeasurement365d">Existence in prior 365d</li>
+				<li data-bind="visible:cohortComparison().psMeasurementCount365d">Count in prior 365d</li>
+				<li data-bind="visible:cohortComparison().psMeasurementBelow">Has latest prior numeric value below normal range</li>
+				<li data-bind="visible:cohortComparison().psMeasurementAbove">Has latest prior numeric value above normal range</li>
+			</ul>
+		</ul>
+		<ul data-bind="visible: cohortComparison().psRiskScores">
+			<li>Risk scores</li>
+			<ul>
+				<li data-bind="visible:cohortComparison().psRiskScoresCharlson">Charlson</li>
+				<li data-bind="visible:cohortComparison().psRiskScoresChads2">CHADS2</li>
+				<li data-bind="visible:cohortComparison().psRiskScoresDcsi">DCSI</li>
+			</ul>
+		</ul>
+		<ul>
+			<li data-bind="visible:cohortComparison().psConceptCounts">Concept counts (count of distinct conditions/procedures/visits in history)</li>
+		</ul>
+		<ul data-bind="visible: cohortComparison().psInteraction">
+			<li>Interaction terms</li>
+			<ul>
+				<li data-bind="visible:cohortComparison().psInteractionYear">By index year</li>
+				<li data-bind="visible:cohortComparison().psInteractionMonth">By index month</li>
+			</ul>
+		</ul>
+	</div>
+	<br />
+	<br />
+	<h3>Appendix 1: Cohort Definitions</h3>
+	<div data-bind="if: $component.cohortComparison().treatmentCohortDefinition() != null">
+		<br />
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				The target cohort <span class="cohort-comparison-pf-reference" data-bind="text: $component.cohortComparison().treatmentCaption()"></span> is defined as:
+			</div>
+			<div class="panel-body">
+				<cohort-expression-viewer params="expression: $component.cohortComparison().treatmentCohortDefinition().expression, selectedFragment: $component.cohortComparison().treatmentCohortDefinition().expression"></cohort-expression-viewer>
+			</div>
+		</div>
+	</div>
+	<div data-bind="if: $component.cohortComparison().outcomeCohortDefinition() != null">
+		<br />
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				The outcome <span class="cohort-comparison-pf-reference" data-bind="text: $component.cohortComparison().outcomeCaption()"></span> is defined as:
+			</div>
+			<div class="panel-body">
+				<cohort-expression-viewer params="expression: $component.cohortComparison().outcomeCohortDefinition().expression, selectedFragment: $component.cohortComparison().outcomeCohortDefinition().expression"></cohort-expression-viewer>
+			</div>
+		</div>
+	</div>
