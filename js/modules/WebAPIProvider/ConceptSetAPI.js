@@ -21,10 +21,21 @@ define(function (require, exports) {
 		});
 		return promise;
     }
+	
+	function getConceptSet(conceptSetId) {
+		var promise = $.ajax({
+			url: config.webAPIRoot + 'conceptset/' + (conceptSetId || '-1') ,
+			method: 'GET',
+			contentType: 'application/json',
+			error: authApi.handleAccessDenied,
+		});
+		return promise;
+  }
     
-    var api = {
+  var api = {
+		getConceptSet: getConceptSet,
 		getGenerationInfo: getGenerationInfo,
-        deleteConceptSet: deleteConceptSet,
+    deleteConceptSet: deleteConceptSet,
 	}
 
 	return api;
