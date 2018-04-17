@@ -99,30 +99,35 @@ define(['knockout',
 					return d.ancestorPmidCount.toString()
 						.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 				},
+				visible: false,
 			},
 			{
 				title: 'Indicated',
 				data: d => {
 					return d.indCi.toString() == "1" ? 'Y' : 'N';
 				},
+				visible: false,
 			},
 			{
 				title: 'Broad Concept',
 				data: d => {
 					return d.tooBroad.toString() == "1" ? 'Y' : 'N';
 				},
+				visible: false,
 			},
 			{
 				title: 'Drug Induced Concept',
 				data: d => {
 					return d.drugInduced.toString() == "1" ? 'Y' : 'N';
 				},
+				visible: false,
 			},
 			{
 				title: 'Pregnancy Concept',
 				data: d => {
 					return d.pregnancy.toString() == "1" ? 'Y' : 'N';
 				},
+				visible: false,
 			},
 			{
 				title: 'Product Label Count (Descendant Concept Match)',
@@ -151,9 +156,10 @@ define(['knockout',
 					return d.ancestorSplicerCount.toString()
 						.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 				},
+				visible: false,
 			},
 			{
-				title: 'FAERS Label (Descendant Concept Match)',
+				title: 'FAERS Count (Descendant Concept Match)',
 				data: d => {
 					return d.descendantFaersCount.toString()
 						.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -179,6 +185,7 @@ define(['knockout',
 					return d.ancestorFaersCount.toString()
 						.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 				},
+				visible: false,
 			},
 			{
 				title: 'User Excluded',
@@ -197,12 +204,14 @@ define(['knockout',
 				data: d => {
 					return d.optimizedOut.toString() == "1" ? 'Y' : 'N';
 				},
+				visible: false,
 			},
 			{
 				title: 'Not Prevalent',
 				data: d => {
 					return d.notPrevalent.toString() == "1" ? 'Y' : 'N';
 				},
+				visible: false,
 			},
 		];
 
@@ -212,8 +221,8 @@ define(['knockout',
 				['10', '25', '50', '100', 'All']
 			],
 			order: [
-				[4, 'asc'],
-				[5, 'desc']
+				[3, 'desc'],
+				[4, 'desc']
 			],
 			Facets: [{
 					'caption': 'Suggested Negative Control',
