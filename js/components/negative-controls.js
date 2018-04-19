@@ -231,26 +231,34 @@ define(['knockout',
 					},
 				},
 				{
-					'caption': 'Publication Count (Exact Concept Match)',
+					'caption': 'Found in Publications',
 					'binding': d => {
-						var val = d.exactPmidCount;
-						if (val.replace)
-							val = parseInt(val.replace(/\,/g, '')); // Remove comma formatting and treat as int
-						if (val > 0) {
-							return '> 0'
+						var desc = d.descenantPmidCount;
+						var exact = d.exactPmidCount;
+						var parent = d.parentPmidCount;
+						if (exact > 0) {
+							return 'Yes (Exact)'
+						} else if (desc > 0) {
+							return 'Yes (Descendant)'
+						} else if (parent > 0) {
+							return 'Yes (Parent)'
 						} else {
-							return '<= 0'
+							return 'No'
 						}
 					},
 				},
 				{
 					'caption': 'Found on Product Label',
 					'binding': d => {
-						var val = d.exactSplicerCount;
-						if (val.replace)
-							val = parseInt(val.replace(/\,/g, '')); // Remove comma formatting and treat as int
-						if (val > 0) {
-							return 'Yes'
+						var desc = d.descenantSplicerCount;
+						var exact = d.exactSplicerCount;
+						var parent = d.parentSplicerCount;
+						if (exact > 0) {
+							return 'Yes (Exact)'
+						} else if (desc > 0) {
+							return 'Yes (Descendant)'
+						} else if (parent > 0) {
+							return 'Yes (Parent)'
 						} else {
 							return 'No'
 						}
@@ -259,13 +267,31 @@ define(['knockout',
 				{
 					'caption': 'Signal in FAERS',
 					'binding': d => {
-						var val = d.exactFaersCount;
-						if (val.replace)
-							val = parseInt(val.replace(/\,/g, '')); // Remove comma formatting and treat as int
-						if (val > 0) {
-							return 'Yes'
+						var desc = d.descenantFaersCount;
+						var exact = d.exactFaersCount;
+						var parent = d.parentFaersCount;
+						if (exact > 0) {
+							return 'Yes (Exact)'
+						} else if (desc > 0) {
+							return 'Yes (Descendant)'
+						} else if (parent > 0) {
+							return 'Yes (Parent)'
 						} else {
 							return 'No'
+						}
+					},
+				},
+				{
+					'caption': 'User Specified',
+					'binding': d => {
+						var inc = d.userIncluded;
+						var exc = d.userExcluded;
+						if (inc > 0) {
+							return 'Included'
+						} else if (exc > 0) {
+							return 'Excluded'
+						} else {
+							return 'None'
 						}
 					},
 				},
@@ -359,7 +385,8 @@ define(['knockout',
 
 			// Mark as pending results
 			self.getSourceInfo(service.sourceKey()).status('PENDING');
-			self.loadingResults(true);
+			self.negativeControls(null);
+			self.loadingResults(false);
 
 			// Create a job to monitor progress
 			var job = new jobDetail({
