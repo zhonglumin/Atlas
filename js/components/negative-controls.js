@@ -213,6 +213,18 @@ define(['knockout',
 				},
 				visible: false,
 			},
+			{
+				title: '<i id="dtNegCtrlRC" class="fa fa-database" aria-hidden="true"></i> RC',
+				data: d => {
+					return `<span class="ncRecordCount">${d.recordCount}</span>`;
+				},
+			},
+			{
+				title: '<i id="dtNegCtrlDRC" class="fa fa-database" aria-hidden="true"></i> DRC',
+				data: d => {
+					return `<span class="ncRecordCount">${d.descendantRecordCount}</span>`;
+				},
+			},
 		];
 
 		self.negControlOptions = {
@@ -566,7 +578,6 @@ define(['knockout',
 		self.refreshRecordCounts = function (obj, event) {
 			if (event.originalEvent) {
 				// User changed event
-				console.log("Record count refresh");
 				self.recordCountsRefreshing(true);
 				$("#dtNegCtrlRC")
 					.toggleClass("fa-database")
@@ -576,6 +587,7 @@ define(['knockout',
 					.toggleClass("fa-database")
 					.toggleClass("fa-circle-o-notch")
 					.toggleClass("fa-spin");
+				$(".ncRecordCount").each(function(index) { $(this).text("...") });
 				var negativeControls = self.negativeControls();
 				var conceptIdsForNegativeControls = $.map(negativeControls, function (o, n) {
 					return o.conceptId;
@@ -584,16 +596,7 @@ define(['knockout',
 						.sourceKey, conceptIdsForNegativeControls, negativeControls)
 					.then(function (rowcounts) {
 						self.negativeControls(negativeControls);
-						console.log('record counts different?');
 						self.recordCountsRefreshing(false);
-						$("#dtNegCtrlRC")
-							.toggleClass("fa-database")
-							.toggleClass("fa-circle-o-notch")
-							.toggleClass("fa-spin");
-						$("#dtNegCtrlDRC")
-							.toggleClass("fa-database")
-							.toggleClass("fa-circle-o-notch")
-							.toggleClass("fa-spin");
 					});
 			}
 		}
@@ -721,6 +724,10 @@ define(['knockout',
 					});
 				*/
 			});
+		}
+		
+		self.disableNewConceptSetButton = function() {
+			return true;
 		}
 
 		// Evalute the concept set when this component is loaded
